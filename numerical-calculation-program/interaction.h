@@ -15,6 +15,7 @@ struct Function_type :public Function {
 void interaction();
 void dict(const std::string &input);
 void matrix(const std::string &input);
+void clear(const std::string &input);
 void inverse(const std::string &input);
 void determinant(const std::string &input);
 void solve(const std::string &input);

@@ -20,27 +20,35 @@ void call(const string &input, Arguments&& ... args){
 	fun(forward<Arguments>(args)...);
 }
 
-void interaction() {
-
+void init_commands() {
 	unique_ptr<Function_type<const string>> func_dict(new Function_type<const string>(&dict));
 	unique_ptr<Function_type<const string>> func_matrix(new Function_type<const string>(&matrix));
 	unique_ptr<Function_type<const string>> func_inverse(new Function_type<const string>(&inverse));
 	unique_ptr<Function_type<const string>> func_determinant(new Function_type<const string>(&determinant));
 	unique_ptr<Function_type<const string>> func_solve(new Function_type<const string>(&solve));
+	unique_ptr<Function_type<const string>> func_clear(new Function_type<const string>(&clear));
 	commands.insert(map < string, unique_ptr<Function> >::value_type("dict", move(func_dict)));
 	commands.insert(map < string, unique_ptr<Function> >::value_type("matrix", move(func_matrix)));
 	commands.insert(map < string, unique_ptr<Function> >::value_type("inverse", move(func_inverse)));
 	commands.insert(map < string, unique_ptr<Function> >::value_type("determinant", move(func_determinant)));
 	commands.insert(map < string, unique_ptr<Function> >::value_type("solve", move(func_solve)));
+	commands.insert(map < string, unique_ptr<Function> >::value_type("clear", move(func_clear)));
 	function_instruction.insert(map < string, string >::value_type("dict", "dict(查询所有指令)\ndict 指令名(查询该指令)\n"));
 	function_instruction.insert(map < string, string >::value_type("matrix", "matrix(查询已存在矩阵)\nmatrix 矩阵名(查询或创建该矩阵)\n"));
 	function_instruction.insert(map < string, string >::value_type("inverse", "inverse 矩阵名(求矩阵的逆)\n"));
 	function_instruction.insert(map < string, string >::value_type("determinant", "determinant 矩阵名(求矩阵的行列式)\n"));
 	function_instruction.insert(map < string, string >::value_type("solve", "solve 系数矩阵A 列向量矩阵b(求方程的解)\n"));
+	function_instruction.insert(map < string, string >::value_type("clear", "clear(删除所有矩阵)\nclear 矩阵名(删除该矩阵)\n"));
+}
+
+void interaction() {
+
+	init_commands();
 
 	cout << "请输入指令（dict查询指令；quit退出）：" << endl;
 	string instruction="";
 	while (true) {
+		instruction = "";
 		getline(cin, instruction);
 		if (instruction == "quit") break;
 		size_t sep = instruction.find_first_of(' ');

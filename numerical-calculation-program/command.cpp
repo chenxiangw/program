@@ -71,7 +71,7 @@ void matrix(const string &input) {
 		cout << endl;
 	}
 	else if(input.find_first_of(' ')!=string::npos){
-		cout << "¾ØÕóÃû³Æ´íÎó" << endl;
+		cout << "¾ØÕóÃû³Æ´íÎó£º²»ÄÜ°üº¬¿Õ¸ñ" << endl;
 	}
 	else if (matrixes.find(input) != matrixes.end()) {
 		cout << "¾ØÕó" << input << "Îª£º" << endl;
@@ -82,8 +82,9 @@ void matrix(const string &input) {
 		vector<vector<double>> temp;
 		shared_ptr<Matrix<double>> new_matrix(new Matrix<double>());
 		int n = -1;
+		string line = "";
 		while (true) {
-			string line = "";
+			line = "";
 			getline(cin, line);
 			if (line == "quit") break;
 			if (line == "ok") {
@@ -111,10 +112,38 @@ void matrix(const string &input) {
 	}
 }
 
+void clear(const string &input) {
+	if (input.size() == 0) {
+		cout << "ÊÇ·ñÇå³ýËùÓÐ¾ØÕó£¿(Y/N)" << endl;
+		string confirm="";
+		while (true) {
+			confirm = "";
+			getline(cin, confirm);
+			if (confirm.size() > 0 && toupper(confirm[0]) == 'Y') {
+				matrixes.clear();
+				break;
+			}
+			else if (confirm.size() > 0 && toupper(confirm[0]) == 'N') {
+				break;
+			}
+			else {
+				cout << "ÊäÈë´íÎó£¬ÇëÖØÐÂÊäÈë£º" << endl;
+				continue;
+			}
+		}
+	}
+	else if (matrixes.find(input) != matrixes.end()) {
+		matrixes.erase(input);
+	}
+	else {
+		cout << "É¾³ý´íÎó£ºÎ´ÕÒµ½¸Ã¾ØÕó" << endl;
+	}
+}
+
 void inverse(const std::string &input){
 	if (matrixes.find(input) != matrixes.end()) {
 		auto result = matrixes[input]->inverse();
-		if (result != nullptr){
+		if (result.get() != nullptr){
 			cout << "Äæ¾ØÕóÎª£º" << endl;
 			result->print();
 		}

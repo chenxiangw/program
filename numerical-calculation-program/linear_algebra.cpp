@@ -206,7 +206,7 @@ void improve_LU_solve(const Matrix<double> &A, const Matrix<double> &LU, const v
 
 void solve_linear_LU_method(const Matrix<double> &A, Matrix<double> &b) {
 	/*
-		求解线性方程组
+		求解系数矩阵可逆的线性方程组
 		参数：
 		A：m*m系数矩阵
 		b：m*n右端项
@@ -561,6 +561,14 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 }
 
 vector<shared_ptr<Linear_solution<double>>> solve_linear_SVD_method(const Matrix<double> &A,const Matrix<double> &b, double eps = EPS) {
+	/*
+		线性方程组通用解法
+		参数：
+		A：m*m系数矩阵
+		b：m*n右端项
+		返回：
+		解
+	*/
 	int m = A.msize();
 	int n = A.nsize();
 	int p = max(m, n);
@@ -633,3 +641,170 @@ vector<shared_ptr<Linear_solution<double>>> solve_linear_SVD_method(const Matrix
 	return solutions;
 }
 
+shared_ptr<vector<double>> solve_tridiagonal(const vector<double> &a,const vector<double> &b,const vector<double> &c,const vector<double> &r) {
+	/*
+		解三对角系数矩阵方程
+		参数：
+		a：对角线下一层元素，n-1维向量
+		b：对角线元素，n维向量
+		c：对角线上一层元素，n-1维向量
+		返回：
+		解
+	*/
+	int n = b.size();
+	shared_ptr<vector<double>> solution(new vector<double>(n));
+	shared_ptr<vector<double>> solution_null;
+	if (b.size() != a.size() + 1 || a.size() != c.size()) {
+		cout << "三对角输入格式错误" << endl;
+		return solution_null;
+	}
+	else if (b[0] < EPS) {
+		cout << "b[0]不能为0" << endl;
+		return solution_null;
+	}
+	vector<double> temp(n,0);
+	double factor = b[0];
+	(*solution)[0] = r[0] / factor;
+	for (int i = 1; i < n; ++i) {
+		temp[i] = c[i-1]/factor;
+		factor = b[i] - a[i-1] * temp[i];
+		if (factor < EPS) {
+			cout << "数值不稳定，无法计算" << endl;
+			return solution_null;
+		}
+		(*solution)[i] = (r[i] - a[i-1] * (*solution)[i - 1]) / factor;
+	}
+	for (int i = n - 2; i >= 0; --i) {
+		(*solution)[i] -= temp[i + 1] * (*solution)[i + 1];
+	}
+	return solution;
+}
+
+shared_ptr<vector<double>> solve_cyclic_tridiagonal(const vector<double> &a, const vector<double> &b, const vector<double> &c,const double alpha,const double beta, const vector<double> &r) {
+	/*
+		解周期三对角系数矩阵方程Ax=r
+		参数：
+		a：对角线下一层元素，n-1维向量
+		b：对角线元素，n维向量
+		c：对角线上一层元素，n-1维向量
+		alpha：左下角元素
+		beta：右上角元素
+		返回：
+		解
+	*/
+	int n = b.size();
+	shared_ptr<vector<double>> solution_null;
+	if (b.size() != a.size() + 1 || a.size() != c.size()) {
+		cout << "三对角输入格式错误" << endl;
+		return solution_null;
+	}
+	else if (n<=2) {
+		cout << "矩阵过小，无法计算" << endl;
+		return solution_null;
+	}
+	double factor, gamma;
+	vector<double> new_b(n), u(n,0), z(n);
+	gamma = -b[0];
+	new_b[0] = b[0] - gamma;
+	new_b[n - 1] = b[n - 1] - alpha*beta / gamma;
+	for (int i = 1; i < n - 1; ++i) new_b[i] = b[i];
+	auto solution_x = solve_tridiagonal(a, new_b, c, r);//求解Ay=r
+	if (solution_x.get() == nullptr) return solution_x;
+	u[0] = gamma;
+	u[n - 1] = alpha;
+	auto solution_z = solve_tridiagonal(a, new_b, c, u);//求解Az=u
+	if (solution_z.get() == nullptr) return solution_z;
+	factor = ((*solution_x)[0] + beta*(*solution_x)[n - 1] / gamma) / (1.0 + (*solution_z)[0] + beta*(*solution_z)[n - 1] / gamma);
+	for (int i = 0; i < n; ++i) (*solution_x)[i] -= factor*(*solution_z)[i];//求得x
+	return solution_x;
+}
+
+shared_ptr<vector<double>> solve_Vandermonde(const vector<double> &A, const vector<double> &b) {
+	/*
+		解Vandermonde系数矩阵方程组Ax=b
+		系数矩阵形如：
+		1	x0			x0^2		...	x0^(n-1)
+		1	x1			x1^2		...	x1^(n-1)
+		...
+		1	x(n-1)	x(n-1)^2	...	x(n-1)^(n-1)
+
+		参数：
+		A：[x0	x1	...	x(n-1)]向量
+		b：右端向量
+		返回：
+		解
+	*/
+	int n = A.size();
+	shared_ptr<vector<double>> solution;
+	if (n != b.size()) {
+		cout << "格式错误" << endl;
+		return solution;
+	}
+	solution.reset(new vector<double>(n,0));
+	vector<double> temp(n, 0);
+	temp[n - 1] = -A[0];
+	for (int i = 1; i < n; ++i) {
+		for (int j = (n - 1 - i); j < n - 1; ++j)temp[j] -= A[i]*temp[j + 1];
+		temp[n - 1] -= A[i];
+	}
+	for (int i = 0; i < n; ++i) {
+		double factor = n;
+		for (int j = n - 1; j > 0; --j) factor = j*temp[j] + A[i] * factor;
+		factor = b[i] / factor;
+		double r = 1.0;
+		for (int j = n - 1; j >= 0; --j) {
+			(*solution)[j] += r*factor;
+			r = temp[j] + A[i] * r;
+		}
+	}
+	return solution;
+}
+
+shared_ptr<vector<double>> solve_Vandermonde_transposition(const vector<double> &A, const vector<double> &b) {
+	/*
+		解Vandermonde系数矩阵方程组Ax=b
+		系数矩阵形如：
+		1				1				...		1
+		x0				x1				...		x(n-1)
+		x0^2		x1^2		...		x(n-1)^2
+		...
+		x0^(n-1)	x1^(n-1)	...		x(n-1)^(n-1)
+
+		参数：
+		A：[x0	x1	...	x(n-1)]向量
+		b：右端向量
+		返回：
+		解
+	*/
+	int n = A.size();
+	shared_ptr<vector<double>> solution;
+	if (n != b.size()) {
+		cout << "格式错误" << endl;
+		return solution;
+	}
+	solution.reset(new vector<double>(n));
+	vector<double> temp(n,0);
+	double factor;
+	if (n == 1) (*solution)[0] = b[0];
+	else {
+		temp[n - 1] = -A[0];
+		for (int i = 1; i < n; ++i) {
+			factor = -A[i];
+			for (int j = (n - 1 - i); j < n - 1; ++j)temp[j] += factor*temp[j + 1];
+			temp[n - 1] += factor;
+		}
+
+		for (int i = 0; i < n; ++i) {
+			factor = A[i];
+			double denominator = 1.0, r = 1.0;
+			double numerator = b[n - 1];
+			for (int j = n - 1; j > 0; --j) {
+				r = temp[j] + factor*r;
+				numerator += b[j - 1] * r;
+				denominator = factor*denominator + r;
+			}
+			(*solution)[i] = numerator / denominator;
+		}
+	}
+	return solution;
+}

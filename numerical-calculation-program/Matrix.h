@@ -3,6 +3,7 @@
 #include<iostream>
 #include<memory>
 #include<algorithm>
+#define EPS pow(2.0, -40.0)
 
 template <typename value_type>
 class Matrix
@@ -200,7 +201,7 @@ std::shared_ptr<Matrix<value_type>> Matrix<value_type>::transposition() const {
 	return AT;
 }
 
-bool LU_decomposition(Matrix<double> &A, std::vector<int> &index, double eps = pow(2.0, -52.0));
+bool LU_decomposition(Matrix<double> &A, std::vector<int> &index, double eps = EPS);
 void LU_solve(const Matrix<double> &LU, const std::vector<int> &index, std::vector<double> &b);
 
 template <typename value_type>
