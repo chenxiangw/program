@@ -432,16 +432,15 @@ template <typename value_type>
 		}
 	}
 	LU_decomposition(LU, index, eps);
-	std::shared_ptr<Matrix<double>> inverse;
 	double value = 1.0;
 	for (int j = 0; j < m; ++j) {
 		value *= LU[j][j];
 	}
 	if (value < eps) {
 		std::cout << "ÇóÄæ´íÎó£º¾ØÕóÎªÆæÒì¾ØÕó" << std::endl;
-		return inverse;
+		return nullptr;
 	}
-	inverse.reset(new Matrix<double>(m, m));
+	std::shared_ptr<Matrix<double>> inverse(new Matrix<double>(m, m));
 	std::vector<double> temp_b(m);
 	for (int j = 0; j < m; ++j) {
 		for (int i = 0; i < m; ++i) temp_b[i] = 0.0;
@@ -454,17 +453,17 @@ template <typename value_type>
 
 template <typename value_type>
 std::shared_ptr<Matrix<double>> Matrix<value_type>::inverse() const {
-	std::shared_ptr<Matrix<double>> inverse;
+
 	if (this->msize() == 0) {
 		std::cout << "ÇóÄæ´íÎó£º¾ØÕóÎª¿Õ" << std::endl;
-		return inverse;
+		return nullptr;
 	}
 	if (this->msize() != this->nsize()) { 
 		std::cout << "ÇóÄæ´íÎó£º¾ØÕó²»ÊÇ·½Õó" << std::endl;
-		return inverse;
+		return nullptr;
 	}
-	inverse= this->inverse_LU_method();
-	return inverse;
+	return this->inverse_LU_method();
+
 }
 
 template <typename value_type>

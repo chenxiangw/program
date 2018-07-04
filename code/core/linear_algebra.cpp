@@ -72,7 +72,7 @@ void Gauss_Jordan(Matrix<double> &A, Matrix<double> &b) {
 		}
 	}
 	//将逆矩阵列次序还原
-	for (size_t l = m - 1; l >= 0; --l) {
+	for (int l = m - 1; l >= 0; --l) {
 		if (index_row[l] != index_col[l]) {
 			for (int k = 0; k < m; ++k) {
 				swap(A[k][index_row[l]], A[k][index_col[l]]);
@@ -170,9 +170,9 @@ void LU_solve(const Matrix<double> &LU,const vector<int> &index, vector<double> 
 			pos = i + 1;
 		b[i] = sum;
 	}
-	for (size_t i = m - 1; i >= 0; i--) {
+	for (int i = m - 1; i >= 0; i--) {
 		sum = b[i];
-		for (size_t j = i + 1; j < m; j++) sum -= LU[i][j] * b[j];
+		for (int j = i + 1; j < m; j++) sum -= LU[i][j] * b[j];
 		b[i] = sum / LU[i][i];
 	}
 
@@ -265,7 +265,7 @@ void householder_transform(Matrix<double> &A, Matrix<double> &U, vector<double> 
 	*/
 	size_t m = A.msize();
 	size_t n = A.nsize();
-	size_t householder_steps = (m == n ? n - 2 : n - 1);
+	int householder_steps = (m == n ? n - 2 : n - 1);
 	for (int k = 0; k < householder_steps + 1; ++k) {
 		//A的k列存储uk
 		S[k] = 0;
@@ -331,17 +331,17 @@ void householder_transform(Matrix<double> &A, Matrix<double> &U, vector<double> 
 			U[i][n - 1] = 0;
 		U[n - 1][n - 1] = 1;
 	}
-	for (size_t k = householder_steps; k >= 0; --k) {
+	for (int k = householder_steps; k >= 0; --k) {
 		if (fabs(S[k]) > 0) {
-			for (size_t j = k + 1; j < n; ++j) {
+			for (int j = k + 1; j < n; ++j) {
 				double t = 0;
-				for (size_t i = k; i < m; ++i)t += U[i][k] * U[i][j];
+				for (int i = k; i < m; ++i)t += U[i][k] * U[i][j];
 				t = -t / U[k][k];
-				for (size_t i = k; i < m; ++i) {
+				for (int i = k; i < m; ++i) {
 					U[i][j] += t * U[i][k]; 
 				}
 			}
-			for (size_t i = k; i < m; ++i)U[i][k] = -U[i][k];
+			for (int i = k; i < m; ++i)U[i][k] = -U[i][k];
 			U[k][k] = 1 + U[k][k];
 			for (int i = 0; i < k - 1; ++i)
 				U[i][k] = 0;
@@ -353,13 +353,13 @@ void householder_transform(Matrix<double> &A, Matrix<double> &U, vector<double> 
 		}
 	}
 	//计算V
-	for (size_t k = n - 1; k >= 0; --k) {
+	for (int k = n - 1; k >= 0; --k) {
 		if ((k < n-2) && (e[k] != 0)) {
-			for (size_t j = k + 1; j < n; ++j) {
+			for (int j = k + 1; j < n; ++j) {
 				double t = 0;
-				for (size_t i = k + 1; i < n; ++i)t += V[i][k] * V[i][j];
+				for (int i = k + 1; i < n; ++i)t += V[i][k] * V[i][j];
 				t = -t / V[k + 1][k];
-				for (size_t i = k + 1; i < n; ++i)V[i][j] += t * V[i][k];
+				for (int i = k + 1; i < n; ++i)V[i][j] += t * V[i][k];
 			}
 		}
 		for (int i = 0; i < n; ++i)V[i][k] = 0;
@@ -380,10 +380,10 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 	householder_transform(A, U, S, V, e);
 
 	//QR分解
-	size_t order = n;
+	int order = n;
 	int iter = 0;
 	while (order > 0){
-		size_t k;
+		int k;
 		int situation;
 		
 		// situation = 1    e[k+1]-e[order-2]不能忽略，e[k]可以忽略，s[order - 1]可以忽略
@@ -398,7 +398,7 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 		}
 		if (k == order - 2) situation = 4;
 		else{
-			size_t ks;
+			int ks;
 			for (ks = order - 1; ks > k; --ks){
 				double factor = ((ks != order) ? abs(e[ks]) : 0) + ((ks != k + 1) ? abs(e[ks - 1]) : 0);
 				if (abs(S[ks]) <= eps*factor){
@@ -420,7 +420,7 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 			{
 				double f = e[order - 2];
 				e[order - 2] = 0;
-				for (size_t j = order - 2; j >= k; --j) {
+				for (int j = order - 2; j >= k; --j) {
 					double t = hypot(S[j], f);
 					double cs = S[j] / t;
 					double sn = f / t;
@@ -443,7 +443,7 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 			{
 				double f = e[k - 1];
 				e[k - 1] = 0;
-				for (size_t j = k; j < order; ++j){
+				for (int j = k; j < order; ++j){
 					double t = hypot(S[j], f);
 					double cs = S[j] / t;
 					double sn = f / t;
@@ -483,7 +483,7 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 				double f = (sk + sp)*(sk - sp) + shift;
 				double g = sk * ek;
 
-				for (size_t j = k; j < order - 1; ++j){
+				for (int j = k; j < order - 1; ++j){
 					double t = hypot(f, g);
 					double cs = f / t;
 					double sn = g / t;
@@ -675,7 +675,7 @@ shared_ptr<vector<double>> solve_tridiagonal(const vector<double> &a,const vecto
 		}
 		(*solution)[i] = (r[i] - a[i-1] * (*solution)[i - 1]) / factor;
 	}
-	for (size_t i = n - 2; i >= 0; --i) {
+	for (int i = n - 2; i >= 0; --i) {
 		(*solution)[i] -= temp[i + 1] * (*solution)[i + 1];
 	}
 	return solution;
@@ -745,15 +745,15 @@ shared_ptr<vector<double>> solve_Vandermonde(const vector<double> &A, const vect
 	vector<double> temp(n, 0);
 	temp[n - 1] = -A[0];
 	for (int i = 1; i < n; ++i) {
-		for (size_t j = (n - 1 - i); j < n - 1; ++j)temp[j] -= A[i]*temp[j + 1];
+		for (int j = (n - 1 - i); j < n - 1; ++j)temp[j] -= A[i]*temp[j + 1];
 		temp[n - 1] -= A[i];
 	}
 	for (int i = 0; i < n; ++i) {
 		double factor = (double)n;
-		for (size_t j = n - 1; j > 0; --j) factor = j*temp[j] + A[i] * factor;
+		for (int j = n - 1; j > 0; --j) factor = j*temp[j] + A[i] * factor;
 		factor = b[i] / factor;
 		double r = 1.0;
-		for (size_t j = n - 1; j >= 0; --j) {
+		for (int j = n - 1; j >= 0; --j) {
 			(*solution)[j] += r*factor;
 			r = temp[j] + A[i] * r;
 		}
@@ -791,7 +791,7 @@ shared_ptr<vector<double>> solve_Vandermonde_transposition(const vector<double> 
 		temp[n - 1] = -A[0];
 		for (int i = 1; i < n; ++i) {
 			factor = -A[i];
-			for (size_t j = (n - 1 - i); j < n - 1; ++j)temp[j] += factor*temp[j + 1];
+			for (int j = (n - 1 - i); j < n - 1; ++j)temp[j] += factor*temp[j + 1];
 			temp[n - 1] += factor;
 		}
 
@@ -799,7 +799,7 @@ shared_ptr<vector<double>> solve_Vandermonde_transposition(const vector<double> 
 			factor = A[i];
 			double denominator = 1.0, r = 1.0;
 			double numerator = b[n - 1];
-			for (size_t j = n - 1; j > 0; --j) {
+			for (int j = n - 1; j > 0; --j) {
 				r = temp[j] + factor*r;
 				numerator += b[j - 1] * r;
 				denominator = factor*denominator + r;

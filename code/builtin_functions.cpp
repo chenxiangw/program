@@ -13,16 +13,27 @@ bool inverse_builtin(std::vector<data_type>&data) {
 	if (data.size() != 1)return false;
 	if (data.back().type() != typeid(std::shared_ptr<Matrix<double>>))return false;
 	std::shared_ptr<Matrix<double>> &matrix = boost::get< std::shared_ptr<Matrix<double>>>(data.back());
-	matrix = matrix->inverse();
+	try {
+		auto inverse = matrix->inverse();
+		matrix = inverse;
+	}
+	catch (std::string &error) {
+		std::cout << error << std::endl;;
+	}
 	return true;
 }
 bool determinant_builtin(std::vector<data_type>&data){
 	if (data.size() != 1)return false;
 	if (data.back().type() != typeid(std::shared_ptr<Matrix<double>>))return false;
 	std::shared_ptr<Matrix<double>> &matrix = boost::get< std::shared_ptr<Matrix<double>>>(data.back());
-	std::shared_ptr<double> result = matrix->determinant();
-	data.pop_back();
-	data.push_back(result);
+	try {
+		std::shared_ptr<double> result = matrix->determinant();
+		data.pop_back();
+		if (result != nullptr)data.push_back(result);
+	}
+	catch (std::string &error) {
+		std::cout << error << std::endl;;
+	}
 	return true;
 }
 bool solve_builtin(std::vector<data_type>&data) {
