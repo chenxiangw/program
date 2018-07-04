@@ -26,8 +26,8 @@ void Gauss_Jordan(Matrix<double> &A, Matrix<double> &b) {
 	if (A.msize() == 0)throw std::string("系数矩阵为空");
 	if (A.msize() != A.nsize()) throw std::string("系数矩阵不是方阵");
 
-	int m = A.msize();
-	int n = b.nsize();
+	size_t m = A.msize();
+	size_t n = b.nsize();
 	vector<int> index_col(m), index_row(m), pivoted(m);
 	for (int i = 0; i < m; ++i) pivoted[i] = 0;
 	for (int i = 0; i < m; ++i) {
@@ -72,7 +72,7 @@ void Gauss_Jordan(Matrix<double> &A, Matrix<double> &b) {
 		}
 	}
 	//将逆矩阵列次序还原
-	for (int l = m - 1; l >= 0; --l) {
+	for (size_t l = m - 1; l >= 0; --l) {
 		if (index_row[l] != index_col[l]) {
 			for (int k = 0; k < m; ++k) {
 				swap(A[k][index_row[l]], A[k][index_col[l]]);
@@ -95,7 +95,7 @@ bool LU_decomposition(Matrix<double> &A, vector<int> &index, double eps) {
 		1/3m^3
 	*/
 	bool even_exchange = true;
-	int m = A.msize();
+	size_t m = A.msize();
 	vector<double> factor_at_line(m);
 	for (int i = 0; i < m; ++i) {
 		double max_num = 0.0;
@@ -159,7 +159,7 @@ void LU_solve(const Matrix<double> &LU,const vector<int> &index, vector<double> 
 	*/
 	double sum;
 	int pos = 0;
-	int m = LU.msize();
+	size_t m = LU.msize();
 	for (int i = 0; i < m; ++i) {
 		int ip = index[i];
 		sum = b[ip];
@@ -170,9 +170,9 @@ void LU_solve(const Matrix<double> &LU,const vector<int> &index, vector<double> 
 			pos = i + 1;
 		b[i] = sum;
 	}
-	for (int i = m - 1; i >= 0; i--) {
+	for (size_t i = m - 1; i >= 0; i--) {
 		sum = b[i];
-		for (int j = i + 1; j < m; j++) sum -= LU[i][j] * b[j];
+		for (size_t j = i + 1; j < m; j++) sum -= LU[i][j] * b[j];
 		b[i] = sum / LU[i][i];
 	}
 
@@ -190,7 +190,7 @@ void improve_LU_solve(const Matrix<double> &A, const Matrix<double> &LU, const v
 		返回：
 		b被解替代
 	*/
-	int m = A.msize();
+	size_t m = A.msize();
 	vector<double> differ(m);
 	for (int i = 0; i < m; ++i) {
 		long double temp_differ = -b[i];
@@ -219,8 +219,8 @@ void solve_linear_LU_method(const Matrix<double> &A, Matrix<double> &b) {
 	if (A.msize() != A.nsize()) throw "系数矩阵不是方阵";
 	if (b.nsize() == 0) throw "右端项为空";
 
-	int m = A.msize();
-	int n = b.nsize();
+	size_t m = A.msize();
+	size_t n = b.nsize();
 	vector<int> index(m);
 	Matrix<double> LU(A);
 	LU_decomposition(LU, index);//A分解成LU矩阵
@@ -242,9 +242,9 @@ void solve_linear_LU_method(const Matrix<double> &A, Matrix<double> &b) {
 
 shared_ptr<Matrix<double>> matrix_mutiply(const Matrix<double> &A, const Matrix<double> &B) {
 	if (A.nsize() != B.msize()) throw "矩阵无法相乘";
-	int m = A.msize();
-	int n = B.nsize();
-	int mid = A.nsize();
+	size_t m = A.msize();
+	size_t n = B.nsize();
+	size_t mid = A.nsize();
 	shared_ptr<Matrix<double>> AB(new Matrix<double>(m, n));
 	for (int i = 0; i < m; ++i) {
 		for (int j = 0; j < n; ++j) {
@@ -263,9 +263,9 @@ void householder_transform(Matrix<double> &A, Matrix<double> &U, vector<double> 
 		householder将A变换为二对角矩阵
 		A=US'V，其中S为S'的对角元素，e为S'的对角上一层元素
 	*/
-	int m = A.msize();
-	int n = A.nsize();
-	int householder_steps = (m == n ? n - 2 : n - 1);
+	size_t m = A.msize();
+	size_t n = A.nsize();
+	size_t householder_steps = (m == n ? n - 2 : n - 1);
 	for (int k = 0; k < householder_steps + 1; ++k) {
 		//A的k列存储uk
 		S[k] = 0;
@@ -331,17 +331,17 @@ void householder_transform(Matrix<double> &A, Matrix<double> &U, vector<double> 
 			U[i][n - 1] = 0;
 		U[n - 1][n - 1] = 1;
 	}
-	for (int k = householder_steps; k >= 0; --k) {
+	for (size_t k = householder_steps; k >= 0; --k) {
 		if (fabs(S[k]) > 0) {
-			for (int j = k + 1; j < n; ++j) {
+			for (size_t j = k + 1; j < n; ++j) {
 				double t = 0;
-				for (int i = k; i < m; ++i)t += U[i][k] * U[i][j];
+				for (size_t i = k; i < m; ++i)t += U[i][k] * U[i][j];
 				t = -t / U[k][k];
-				for (int i = k; i < m; ++i) { 
+				for (size_t i = k; i < m; ++i) {
 					U[i][j] += t * U[i][k]; 
 				}
 			}
-			for (int i = k; i < m; ++i)U[i][k] = -U[i][k];
+			for (size_t i = k; i < m; ++i)U[i][k] = -U[i][k];
 			U[k][k] = 1 + U[k][k];
 			for (int i = 0; i < k - 1; ++i)
 				U[i][k] = 0;
@@ -353,13 +353,13 @@ void householder_transform(Matrix<double> &A, Matrix<double> &U, vector<double> 
 		}
 	}
 	//计算V
-	for (int k = n - 1; k >= 0; --k) {
+	for (size_t k = n - 1; k >= 0; --k) {
 		if ((k < n-2) && (e[k] != 0)) {
-			for (int j = k + 1; j < n; ++j) {
+			for (size_t j = k + 1; j < n; ++j) {
 				double t = 0;
-				for (int i = k + 1; i < n; ++i)t += V[i][k] * V[i][j];
+				for (size_t i = k + 1; i < n; ++i)t += V[i][k] * V[i][j];
 				t = -t / V[k + 1][k];
-				for (int i = k + 1; i < n; ++i)V[i][j] += t * V[i][k];
+				for (size_t i = k + 1; i < n; ++i)V[i][j] += t * V[i][k];
 			}
 		}
 		for (int i = 0; i < n; ++i)V[i][k] = 0;
@@ -373,17 +373,17 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 		A=USV，S为对角矩阵，U,V为正交矩阵
 		返回：A的秩
 	*/
-	int m = A.msize();
-	int n = A.nsize();
+	size_t m = A.msize();
+	size_t n = A.nsize();
 	vector<double> e(n);
 	//householder分解
 	householder_transform(A, U, S, V, e);
 
 	//QR分解
-	int order = n;
+	size_t order = n;
 	int iter = 0;
 	while (order > 0){
-		int k;
+		size_t k;
 		int situation;
 		
 		// situation = 1    e[k+1]-e[order-2]不能忽略，e[k]可以忽略，s[order - 1]可以忽略
@@ -398,7 +398,7 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 		}
 		if (k == order - 2) situation = 4;
 		else{
-			int ks;
+			size_t ks;
 			for (ks = order - 1; ks > k; --ks){
 				double factor = ((ks != order) ? abs(e[ks]) : 0) + ((ks != k + 1) ? abs(e[ks - 1]) : 0);
 				if (abs(S[ks]) <= eps*factor){
@@ -420,7 +420,7 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 			{
 				double f = e[order - 2];
 				e[order - 2] = 0;
-				for (int j = order - 2; j >= k; --j) {
+				for (size_t j = order - 2; j >= k; --j) {
 					double t = hypot(S[j], f);
 					double cs = S[j] / t;
 					double sn = f / t;
@@ -443,7 +443,7 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 			{
 				double f = e[k - 1];
 				e[k - 1] = 0;
-				for (int j = k; j < order; ++j){
+				for (size_t j = k; j < order; ++j){
 					double t = hypot(S[j], f);
 					double cs = S[j] / t;
 					double sn = f / t;
@@ -483,7 +483,7 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 				double f = (sk + sp)*(sk - sp) + shift;
 				double g = sk * ek;
 
-				for (int j = k; j < order - 1; ++j){
+				for (size_t j = k; j < order - 1; ++j){
 					double t = hypot(f, g);
 					double cs = f / t;
 					double sn = g / t;
@@ -551,7 +551,7 @@ int SVD_decomposition(Matrix<double> &A, Matrix<double> &U, vector<double> &S, M
 		}
 	}
 	//计算秩
-	int N = S.size();
+	size_t N = S.size();
 	double factor = N*S[0] * eps;
 	int r = 0;
 	for (int i = 0; i < N; ++i) {
@@ -570,9 +570,9 @@ vector<shared_ptr<Linear_solution<double>>> solve_linear_SVD_method(const Matrix
 		返回：
 		解
 	*/
-	int m = A.msize();
-	int n = A.nsize();
-	int p = max(m, n);
+	size_t m = A.msize();
+	size_t n = A.nsize();
+	size_t p = max(m, n);
 	Matrix<double> U(p, p);
 	Matrix<double> V(p, p);
 	Matrix<double> B(p,p);
@@ -589,8 +589,8 @@ vector<shared_ptr<Linear_solution<double>>> solve_linear_SVD_method(const Matrix
 
 	//求解向量
 	vector<shared_ptr<Linear_solution<double>>>solutions;
-	int question_num = b.nsize();
-	int general_solution_num = n - r;
+	size_t question_num = b.nsize();
+	size_t general_solution_num = n - r;
 	for (int question = 0; question < question_num; ++question) {
 		shared_ptr<Linear_solution<double>> solution(new Linear_solution<double>(n, general_solution_num));
 		vector<double> temp(n, 0);
@@ -652,7 +652,7 @@ shared_ptr<vector<double>> solve_tridiagonal(const vector<double> &a,const vecto
 		返回：
 		解
 	*/
-	int n = b.size();
+	size_t n = b.size();
 	shared_ptr<vector<double>> solution(new vector<double>(n));
 	shared_ptr<vector<double>> solution_null;
 	if (b.size() != a.size() + 1 || a.size() != c.size()) {
@@ -675,7 +675,7 @@ shared_ptr<vector<double>> solve_tridiagonal(const vector<double> &a,const vecto
 		}
 		(*solution)[i] = (r[i] - a[i-1] * (*solution)[i - 1]) / factor;
 	}
-	for (int i = n - 2; i >= 0; --i) {
+	for (size_t i = n - 2; i >= 0; --i) {
 		(*solution)[i] -= temp[i + 1] * (*solution)[i + 1];
 	}
 	return solution;
@@ -693,7 +693,7 @@ shared_ptr<vector<double>> solve_cyclic_tridiagonal(const vector<double> &a, con
 		返回：
 		解
 	*/
-	int n = b.size();
+	size_t n = b.size();
 	shared_ptr<vector<double>> solution_null;
 	if (b.size() != a.size() + 1 || a.size() != c.size()) {
 		cout << "三对角输入格式错误" << endl;
@@ -735,7 +735,7 @@ shared_ptr<vector<double>> solve_Vandermonde(const vector<double> &A, const vect
 		返回：
 		解
 	*/
-	int n = A.size();
+	size_t n = A.size();
 	shared_ptr<vector<double>> solution;
 	if (n != b.size()) {
 		cout << "格式错误" << endl;
@@ -745,15 +745,15 @@ shared_ptr<vector<double>> solve_Vandermonde(const vector<double> &A, const vect
 	vector<double> temp(n, 0);
 	temp[n - 1] = -A[0];
 	for (int i = 1; i < n; ++i) {
-		for (int j = (n - 1 - i); j < n - 1; ++j)temp[j] -= A[i]*temp[j + 1];
+		for (size_t j = (n - 1 - i); j < n - 1; ++j)temp[j] -= A[i]*temp[j + 1];
 		temp[n - 1] -= A[i];
 	}
 	for (int i = 0; i < n; ++i) {
-		double factor = n;
-		for (int j = n - 1; j > 0; --j) factor = j*temp[j] + A[i] * factor;
+		double factor = (double)n;
+		for (size_t j = n - 1; j > 0; --j) factor = j*temp[j] + A[i] * factor;
 		factor = b[i] / factor;
 		double r = 1.0;
-		for (int j = n - 1; j >= 0; --j) {
+		for (size_t j = n - 1; j >= 0; --j) {
 			(*solution)[j] += r*factor;
 			r = temp[j] + A[i] * r;
 		}
@@ -777,7 +777,7 @@ shared_ptr<vector<double>> solve_Vandermonde_transposition(const vector<double> 
 		返回：
 		解
 	*/
-	int n = A.size();
+	size_t n = A.size();
 	shared_ptr<vector<double>> solution;
 	if (n != b.size()) {
 		cout << "格式错误" << endl;
@@ -791,7 +791,7 @@ shared_ptr<vector<double>> solve_Vandermonde_transposition(const vector<double> 
 		temp[n - 1] = -A[0];
 		for (int i = 1; i < n; ++i) {
 			factor = -A[i];
-			for (int j = (n - 1 - i); j < n - 1; ++j)temp[j] += factor*temp[j + 1];
+			for (size_t j = (n - 1 - i); j < n - 1; ++j)temp[j] += factor*temp[j + 1];
 			temp[n - 1] += factor;
 		}
 
@@ -799,7 +799,7 @@ shared_ptr<vector<double>> solve_Vandermonde_transposition(const vector<double> 
 			factor = A[i];
 			double denominator = 1.0, r = 1.0;
 			double numerator = b[n - 1];
-			for (int j = n - 1; j > 0; --j) {
+			for (size_t j = n - 1; j > 0; --j) {
 				r = temp[j] + factor*r;
 				numerator += b[j - 1] * r;
 				denominator = factor*denominator + r;

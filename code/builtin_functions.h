@@ -5,33 +5,33 @@
 #include<utility>
 #include<vector>
 #include<limits>
-//#include"Evaluation_function.h"
+#include <boost/variant/recursive_variant.hpp>
 #include"core/numerical_recipes.h"
+#include"parser/program.hpp"
 
-#include"parser/vm.hpp"
 
-void inverse_builtin(client::vmachine  *vm);
-void determinant_builtin(client::vmachine  *vm);
-void solve_builtin(client::vmachine  *vm);
+bool inverse_builtin(std::vector<data_type>&data);
+bool determinant_builtin(std::vector<data_type>&data);
+bool solve_builtin(std::vector<data_type>&data);
 
-//void integrate(const std::vector<std::string> *input);
-//void diff(const std::vector<std::string> *input);
+//bool integrate(const std::vector<std::string> *input);
+//bool diff(const std::vector<std::string> *input);
 
-void cos_builtin(client::vmachine  *vm);
-void sin_builtin(client::vmachine  *vm);
-void tan_builtin(client::vmachine  *vm);
-void acos_builtin(client::vmachine  *vm);
-void asin_builtin(client::vmachine  *vm);
-void atan_builtin(client::vmachine  *vm);
+bool cos_builtin(std::vector<data_type>&data);
+bool sin_builtin(std::vector<data_type>&data);
+bool tan_builtin(std::vector<data_type>&data);
+bool acos_builtin(std::vector<data_type>&data);
+bool asin_builtin(std::vector<data_type>&data);
+bool atan_builtin(std::vector<data_type>&data);
 
-void gamma_builtin(client::vmachine  *vm);
-void ln_gamma_builtin(client::vmachine  *vm);
-void gamma_P_builtin(client::vmachine  *vm);
-void gamma_Q_builtin(client::vmachine  *vm);
-void factorial_builtin(client::vmachine  *vm);
-void binomial_builtin(client::vmachine  *vm);
-void beta_builtin(client::vmachine  *vm);
-void incomplete_beta_builtin(client::vmachine  *vm);
-void error_function_builtin(client::vmachine  *vm);
-void Legendre_p_builtin(client::vmachine  *vm);
-void Legendre_q_builtin(client::vmachine  *vm);
+bool gamma_builtin(std::vector<data_type>&data);
+bool ln_gamma_builtin(std::vector<data_type>&data);
+bool gamma_P_builtin(std::vector<data_type>&data);
+bool gamma_Q_builtin(std::vector<data_type>&data);
+bool factorial_builtin(std::vector<data_type>&data);
+bool binomial_builtin(std::vector<data_type>&data);
+bool beta_builtin(std::vector<data_type>&data);
+bool incomplete_beta_builtin(std::vector<data_type>&data);
+bool error_function_builtin(std::vector<data_type>&data);
+bool Legendre_p_builtin(std::vector<data_type>&data);
+bool Legendre_q_builtin(std::vector<data_type>&data);

@@ -59,10 +59,10 @@ void Chebyshev_derivation(const double a, const double b, const vector<double> &
 	c_diff：切比雪夫多项式积分的系数
 	*/
 
-	int n = c.size();
+	size_t n = c.size();
 	c_diff[n - 1] = 0.0;
 	c_diff[n - 2] = 2 * (n - 1)*c[n - 1];
-	for (int j = n - 3; j >= 0; j--)c_diff[j] = c_diff[j + 2] + 2 * (j + 1)*c[j + 1];
+	for (size_t j = n - 3; j >= 0; j--)c_diff[j] = c_diff[j + 2] + 2 * (j + 1)*c[j + 1];
 	double factor = 2.0 / (b - a);
 	for (int j = 0; j<n; j++)
 		c_diff[j] *= factor;

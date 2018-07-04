@@ -32,7 +32,7 @@ namespace client {
 
 			qi::rule<iterator_type, std::string(), ascii::space_type> function_name;
 			qi::rule<iterator_type, ast::variable(), ascii::space_type> variable;
-			qi::rule<iterator_type, ast::parameter(), ascii::space_type> parameter;
+			qi::rule<iterator_type, ast::parameter_type(), ascii::space_type> parameter;
 		};
 	}
 }

@@ -16,15 +16,15 @@ private:
 public:
 	//构造函数
 	Matrix();//默认
-	Matrix(int m,int n);//m*n零矩阵
+	Matrix(size_t m, size_t n);//m*n零矩阵
 	Matrix(std::vector<std::vector<value_type>> &input);//vector复制构造
 	Matrix(const Matrix<value_type> &input);//Matrix复制构造
 	//赋值
 	Matrix<value_type> & operator=(std::vector<std::vector<value_type>> &input);//=vector
 	Matrix<value_type> & operator=(const Matrix<value_type> &input);//=Matrix
 	//[]重载
-	inline std::vector<value_type> & operator[](const int i);
-	inline const std::vector<value_type> & operator[](const int i) const;//只读
+	inline std::vector<value_type> & operator[](const size_t i);
+	inline const std::vector<value_type> & operator[](const size_t i) const;//只读
 	//运算重载
 	 std::shared_ptr<Matrix<value_type>> operator+(Matrix<value_type> &b);
 	 std::shared_ptr<Matrix<value_type>>  operator-(Matrix<value_type> &b);
@@ -42,8 +42,8 @@ public:
 	 Matrix<value_type> &  operator-=(double b);
 	 Matrix<value_type> &  operator*=(double b);
 	//
-	inline int msize() const;
-	inline int nsize() const;
+	inline size_t msize() const;
+	inline size_t nsize() const;
 	//打印
 	 void print() const;
 	//析构
@@ -54,7 +54,7 @@ public:
 	//求逆
 	std::shared_ptr<Matrix<double>> Matrix<value_type>::inverse()const;
 	//求行列式
-	double determinant()const;
+	std::shared_ptr<double> determinant()const;
 };
 
 template <typename value_type>
@@ -63,7 +63,7 @@ Matrix<value_type>::Matrix() {
 }
 
 template <typename value_type>
-Matrix<value_type>::Matrix(int m, int n) {
+Matrix<value_type>::Matrix(size_t m, size_t n) {
 	data = new std::vector<std::vector<value_type>>();
 	for (int i = 0; i < m; ++i) {
 		std::vector<value_type> line(n,0);
@@ -94,8 +94,8 @@ Matrix<value_type>::Matrix(std::vector<std::vector<value_type>> &input) {
 
 template <typename value_type>
 Matrix<value_type>::Matrix(const Matrix<value_type> &input) {
-	int msize = input.msize();
-	int nsize = input.nsize();
+	size_t msize = input.msize();
+	size_t nsize = input.nsize();
 	data = new std::vector<std::vector<value_type>>();
 	for (int i = 0; i < msize; ++i) {
 		std::vector<value_type>line(nsize);
@@ -157,19 +157,19 @@ Matrix<value_type> & Matrix<value_type>::operator=(const Matrix<value_type> &inp
 }
 
 template <typename value_type>
-inline std::vector<value_type> & Matrix<value_type>::operator[](const int i) {
+inline std::vector<value_type> & Matrix<value_type>::operator[](const size_t i) {
 	return (*data)[i];
 }
 
 template <typename value_type>
-inline const std::vector<value_type> & Matrix<value_type>::operator[](const int i) const {
+inline const std::vector<value_type> & Matrix<value_type>::operator[](const size_t i) const {
 	return  (*data)[i];
 }
 
 template <typename value_type>
  std::shared_ptr<Matrix<value_type>> Matrix<value_type>::operator+(Matrix<value_type> &b) {
-	int m = this->msize();
-	int n = this->nsize();
+	size_t m = this->msize();
+	size_t n = this->nsize();
 	std::shared_ptr<Matrix<value_type>> result(new Matrix<double>(m, n));
 	for (int i = 0; i < m; ++i) {
 		for (int j = 0; j < n; ++j) {
@@ -180,8 +180,8 @@ template <typename value_type>
 }
 template <typename value_type>
  std::shared_ptr<Matrix<value_type>> Matrix<value_type>::operator-(Matrix<value_type> &b) {
-	int m = this->msize();
-	int n = this->nsize();
+	size_t m = this->msize();
+	size_t n = this->nsize();
 	std::shared_ptr<Matrix<value_type>> result(new Matrix<double>(m, n));
 	for (int i = 0; i < m; ++i) {
 		for (int j = 0; j < n; ++j) {
@@ -192,9 +192,9 @@ template <typename value_type>
 }
 template <typename value_type>
  std::shared_ptr<Matrix<value_type>> Matrix<value_type>::operator*(Matrix<value_type> &b) {
-	int m = this->msize();
-	int n = b.nsize();
-	int mid = this->nsize();
+	size_t m = this->msize();
+	size_t n = b.nsize();
+	size_t mid = this->nsize();
 	std::shared_ptr<Matrix<value_type>> result(new Matrix<double>(m, n));
 	for (int i = 0; i < m; ++i) {
 		for (int j = 0; j < n; ++j) {
@@ -209,9 +209,9 @@ template <typename value_type>
 }
  template <typename value_type>
  std::shared_ptr<Matrix<value_type>> Matrix<value_type>::operator/(Matrix<value_type> &b) {
-	 int m = this->msize();
-	 int n = b.nsize();
-	 int mid = this->nsize();
+	 size_t m = this->msize();
+	 size_t n = b.nsize();
+	 size_t mid = this->nsize();
 	 try {
 		 std::shared_ptr<Matrix<value_type>> inverse = b.inverse();
 		 std::shared_ptr<Matrix<value_type>> result(new Matrix<double>(m, n));
@@ -233,8 +233,8 @@ template <typename value_type>
  }
  template <typename value_type>
  std::shared_ptr<Matrix<value_type>> Matrix<value_type>::operator+(double b) {
-	 int m = this->msize();
-	 int n = this->nsize();
+	 size_t m = this->msize();
+	 size_t n = this->nsize();
 	 std::shared_ptr<Matrix<value_type>> result(new Matrix<double>(m, n));
 	 for (int i = 0; i < m; ++i) {
 		 for (int j = 0; j < n; ++j) {
@@ -245,8 +245,8 @@ template <typename value_type>
  }
  template <typename value_type>
  std::shared_ptr<Matrix<value_type>>  Matrix<value_type>::operator-(double b) {
-	 int m = this->msize();
-	 int n = this->nsize();
+	 size_t m = this->msize();
+	 size_t n = this->nsize();
 	 std::shared_ptr<Matrix<value_type>> result(new Matrix<double>(m, n));
 	 for (int i = 0; i < m; ++i) {
 		 for (int j = 0; j < n; ++j) {
@@ -257,8 +257,8 @@ template <typename value_type>
  }
  template <typename value_type>
  std::shared_ptr<Matrix<value_type>> Matrix<value_type>:: operator*(double b) {
-	 int m = this->msize();
-	 int n = this->nsize();
+	 size_t m = this->msize();
+	 size_t n = this->nsize();
 	 std::shared_ptr<Matrix<value_type>> result(new Matrix<double>(m, n));
 	 for (int i = 0; i < m; ++i) {
 		 for (int j = 0; j < n; ++j) {
@@ -269,8 +269,8 @@ template <typename value_type>
  }
  template <typename value_type>
  std::shared_ptr<Matrix<value_type>> Matrix<value_type>:: operator/(double b) {
-	 int m = this->msize();
-	 int n = this->nsize();
+	 size_t m = this->msize();
+	 size_t n = this->nsize();
 	 std::shared_ptr<Matrix<value_type>> result(new Matrix<double>(m, n));
 	 for (int i = 0; i < m; ++i) {
 		 for (int j = 0; j < n; ++j) {
@@ -281,8 +281,8 @@ template <typename value_type>
  }
  template <typename value_type>
  std::shared_ptr<Matrix<value_type>>  Matrix<value_type>::reverse_sign() {
-	 int m = this->msize();
-	 int n = this->nsize();
+	 size_t m = this->msize();
+	 size_t n = this->nsize();
 	 std::shared_ptr<Matrix<value_type>> result(new Matrix<double>(m, n));
 	 for (int i = 0; i < m; ++i) {
 		 for (int j = 0; j < n; ++j) {
@@ -368,12 +368,12 @@ template <typename value_type>
 
 
 template <typename value_type>
-inline int Matrix<value_type>::msize() const {
+inline size_t Matrix<value_type>::msize() const {
 	if (data == nullptr) return 0;
 	return data->size();
 }
 template <typename value_type>
-inline int Matrix<value_type>::nsize() const {
+inline size_t Matrix<value_type>::nsize() const {
 	if (data == nullptr) return 0;
 	return (*data)[0].size();
 }
@@ -385,8 +385,8 @@ Matrix<value_type>::~Matrix() {
 
 template <typename value_type>
  void Matrix<value_type>::print() const {
-	int msize = this->msize();
-	int nsize = this->nsize();
+	size_t msize = this->msize();
+	size_t nsize = this->nsize();
 	std::cout << "[";
 	for (int i = 0; i < msize; ++i) {
 		std::cout << "[ ";
@@ -423,7 +423,7 @@ void LU_solve(const Matrix<double> &LU, const std::vector<int> &index, std::vect
 template <typename value_type>
  std::shared_ptr<Matrix<double>> Matrix<value_type>::inverse_LU_method(double eps) const {
 
-	int m = this->msize();
+	 size_t m = this->msize();
 	std::vector<int> index(m);
 	Matrix<double> LU(m,m);
 	for (int i = 0; i < m; ++i) {
@@ -478,7 +478,7 @@ template <typename value_type>
 	*/
 
 	double value = 1.0;
-	int m = this->msize();
+	size_t m = this->msize();
 	std::vector<int> index(m);
 	Matrix<double> LU(m, m);
 	for (int i = 0; i < m; ++i) {
@@ -494,16 +494,16 @@ template <typename value_type>
 }
 
 template <typename value_type>
-double Matrix<value_type>::determinant() const {
+std::shared_ptr<double> Matrix<value_type>::determinant() const {
 	if (this->msize() == 0) {
 		std::cout << "行列式错误：矩阵为空" << std::endl;
-		return 0;
+		return nullptr;
 	}
 	if (this->msize() != this->nsize()) {
 		std::cout << "行列式错误：矩阵不是方阵" << std::endl;
-		return 0;
+		return nullptr;
 	}
-	return this->determinant_LU_method();
+	return std::shared_ptr<double>(new double(this->determinant_LU_method()));
 }
 
 #undef EPS

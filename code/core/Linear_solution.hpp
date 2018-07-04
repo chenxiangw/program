@@ -11,13 +11,13 @@ class Linear_solution
 private:
 	std::vector<value_type> *particular_solution=nullptr;
 	std::vector<std::vector<value_type>> *general_solution = nullptr;//每个解按行存储
-	int solution_dimension = 0;
-	int general_solution_num = 0;
+	size_t solution_dimension = 0;
+	size_t general_solution_num = 0;
 	bool least_square_solution = false;
 public:
 	//构造函数
 	Linear_solution();
-	Linear_solution(int solution_dimension, int general_solution_num);
+	Linear_solution(size_t solution_dimension, size_t general_solution_num);
 	Linear_solution(const Linear_solution<value_type> &input);//Linear_solution复制构造
 	Linear_solution(const std::vector<value_type> &particular_solution, const Matrix<value_type> &general_solution);//特解和通解构造
 
@@ -48,7 +48,7 @@ Linear_solution<value_type>::Linear_solution() {
 }
 
 template <typename value_type>
-Linear_solution<value_type>::Linear_solution(int solution_dimension, int general_solution_num) {
+Linear_solution<value_type>::Linear_solution(size_t solution_dimension, size_t general_solution_num) {
 	this->solution_dimension = solution_dimension;
 	this->general_solution_num = general_solution_num;
 	particular_solution = new std::vector<value_type>(solution_dimension,0);
@@ -169,8 +169,8 @@ inline const std::vector<std::vector<value_type>> * Linear_solution<value_type>:
 
 template <typename value_type>
 inline void Linear_solution<value_type>::set_solution_value(const std::vector<value_type> &particular_solution,const Matrix<value_type> &general_solution) {
-	int solution_dimension = particular_solution.size();
-	int general_solution_num = general_solution.msize();
+	size_t solution_dimension = particular_solution.size();
+	size_t general_solution_num = general_solution.msize();
 	if (general_solution_num > 0 && solution_dimension != general_solution.nsize()) {
 		cout << "输入格式错误" << endl;
 		return;

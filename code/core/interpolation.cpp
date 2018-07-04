@@ -17,7 +17,7 @@ double polynomial_interpolation(const vector<double> &x_values,const vector<doub
 		返回：
 			误差估计dy
 	*/
-	int n;
+	size_t n;
 	if(end==-1)n = x_values.size();
 	else n = end - start;
 	vector<double> C(n), D(n);
@@ -69,7 +69,7 @@ double rational_interpolation(const vector<double> &x_values, const vector<doubl
 		返回：
 		误差估计dy
 	*/
-	int n = x_values.size();
+	size_t n = x_values.size();
 	vector<double> C(n), D(n);
 	//寻找x_values中与x值最近的点作为初始逼近值
 	double diff = fabs(x - x_values[0]);
@@ -118,7 +118,7 @@ shared_ptr<vector<double>> spline_solve_y2order(const vector<double> &x_values, 
 		返回：
 		插值多项式的二阶导数
 	*/
-	int n = x_values.size();
+	size_t n = x_values.size();
 	vector<double> temp(n);
 	shared_ptr<vector<double>> y2order(new vector<double>(n));
 	if (fabs(y_boundary1) > pow(2, 100)) (*y2order)[0] = temp[0] = 0.0;//下边界导数值过大，则采用自然边界条件
@@ -139,15 +139,15 @@ shared_ptr<vector<double>> spline_solve_y2order(const vector<double> &x_values, 
 		temp[n-1]= (3.0 / (x_values[n-1] - x_values[n-2]))*(y_boundary2-(y_values[n-1] - y_values[n-2]) / (x_values[n-1] - x_values[n-2]));
 	}
 	(*y2order)[n - 1] = (temp[n - 1] - (*y2order)[n - 1] * temp[n - 2]) / ((*y2order)[n - 1] * (*y2order)[n - 2] + 1.0);
-	for (int i = n - 2; i >= 0; --i) {
+	for (size_t i = n - 2; i >= 0; --i) {
 		(*y2order)[i] = (*y2order)[i] * (*y2order)[i + 1] + temp[i];
 	}
 	return y2order;
 }
 
 void spline_solve_y(const vector<double> &x_values, const vector<double> &y_values, const vector<double> &y2order, const double x, double &y){
-	int n = x_values.size();
-	int x_boundary1 = 0,x_boundary2=n-1,pos;
+	size_t n = x_values.size();
+	size_t x_boundary1 = 0,x_boundary2=n-1,pos;
 	while (x_boundary2 - x_boundary1 > 1) {
 		pos = (x_boundary1 + x_boundary2) / 2;
 		if (x_values[pos] > x)x_boundary2 = pos;

@@ -1,11 +1,8 @@
 #pragma once
 
-#include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/variant/recursive_variant.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
-#include <boost/fusion/include/io.hpp>
-#include <boost/optional.hpp>
 #include <list>
 
 namespace client { 
@@ -57,13 +54,9 @@ namespace client {
 			, variable
 		>parameter_type;
 
-		struct parameter {
-			parameter_type param;
-		};
-
 		struct function_call{
 			std::string function_name;
-			std::list<parameter> args;
+			std::list<parameter_type> args;
 		};
 
 		struct expression{
@@ -81,8 +74,26 @@ namespace client {
 			std::list<expression> rhs;
 		};
 
+		struct output {
+			std::string param;
+		};
+
+		struct input{
+			std::string type;
+			std::string param;
+		};
+
+		struct function_info {
+			std::list <output> out;
+			std::string function_name;
+			std::list <input> in;
+		};
+
+		struct define_function;
+
 		typedef boost::variant<
-			variable_declaration
+			define_function
+			, variable_declaration
 			, assignment
 			, expression
 			>
@@ -90,6 +101,10 @@ namespace client {
 
 		typedef std::list<statement> statement_list;
 
+		struct define_function {
+			function_info info;
+			std::string content;
+		};
 	}
 }
 
@@ -121,14 +136,9 @@ BOOST_FUSION_ADAPT_STRUCT(
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
-	client::ast::parameter,
-	(client::ast::parameter_type, param)
-)
-
-BOOST_FUSION_ADAPT_STRUCT(
 	client::ast::function_call,
 	(std::string, function_name)
-	(std::list<client::ast::parameter>, args)
+	(std::list<client::ast::parameter_type>, args)
 )
 
 
@@ -148,4 +158,28 @@ BOOST_FUSION_ADAPT_STRUCT(
 	client::ast::variable_declaration,
 	(std::list<std::string>, vars)
 	(std::list<client::ast::expression>, rhs)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+	client::ast::output,
+	(std::string, param)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+	client::ast::input,
+	(std::string, type)
+	(std::string, param)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+	client::ast::function_info,
+	(std::list <client::ast::output>, out)
+	(std::string, function_name)
+	(std::list <client::ast::input>, in)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+	client::ast::define_function,
+	(client::ast::function_info, info)
+	(std::string, content)
 )
